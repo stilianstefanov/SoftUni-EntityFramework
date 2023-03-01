@@ -15,43 +15,32 @@
             SoftUniContext dbContxt = new SoftUniContext();
 
 
-            Console.WriteLine(IncreaseSalaries(dbContxt));
+            Console.WriteLine(GetEmployeesByFirstNameStartingWithSa(dbContxt));
         }
 
-        public static string IncreaseSalaries(SoftUniContext context)
+        public static string GetEmployeesByFirstNameStartingWithSa(SoftUniContext context)
         {
             var sb = new StringBuilder();
 
-            var allowableDeps = new string[]
-            {
-                "Engineering",
-                "Tool Design",
-                "Marketing",
-                "Information Services"
-            };
-
             var employees = context.Employees
-                .Where(e => allowableDeps.Contains(e.Department.Name))
+                .Where(e => e.FirstName.ToLower().StartsWith("sa"))
+                .Select(e => new
+                {
+                    e.FirstName,
+                    e.LastName,
+                    e.JobTitle,
+                    e.Salary
+                })
                 .OrderBy(e => e.FirstName)
                 .ThenBy(e => e.LastName)
                 .ToArray();
 
             foreach (var emp in employees)
             {
-                emp.Salary += emp.Salary * 0.12M;
-            }
-
-            context.SaveChanges();
-
-
-            foreach (var emp in employees)
-            {
-                sb.AppendLine($"{emp.FirstName} {emp.LastName} (${emp.Salary:F2})");
+                sb.AppendLine($"{emp.FirstName} {emp.LastName} - {emp.JobTitle} - (${emp.Salary:F2})");
             }
 
             return sb.ToString().TrimEnd();
         }
-
-
     }
 }
