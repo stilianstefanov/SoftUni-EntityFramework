@@ -13,11 +13,11 @@
         {
             using ProductShopContext context = new ProductShopContext();
 
-            string path = @"..\..\..\Datasets\categories.json";
+            string path = @"..\..\..\Datasets\categories-products.json";
 
             string inputJson = File.ReadAllText(path);
 
-            Console.WriteLine(ImportCategories(context, inputJson));
+            Console.WriteLine(ImportCategoryProducts(context, inputJson));
         }
 
         //Problem 1
@@ -89,6 +89,28 @@
             context.SaveChanges();
 
             return $"Successfully imported {validCategories.Count}";
+        }
+
+        //Problem 4
+
+        public static string ImportCategoryProducts(ProductShopContext context, string inputJson)
+        {
+            IMapper mapper = CreateMapper();
+
+            ImportCategoryProductDto[] categoryProductDtos = JsonConvert.DeserializeObject<ImportCategoryProductDto[]>(inputJson)!;
+
+            ICollection<CategoryProduct> categoryProducts = new HashSet<CategoryProduct>();
+
+            foreach (var cpd in categoryProductDtos)
+            {
+                categoryProducts.Add(mapper.Map<CategoryProduct>(cpd));
+            }
+
+            context.CategoriesProducts.AddRange(categoryProducts);
+
+            context.SaveChanges();
+
+            return $"Successfully imported {categoryProducts.Count}";
         }
 
         private static IMapper CreateMapper()
