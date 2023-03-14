@@ -20,7 +20,7 @@
 
             string inputJson = File.ReadAllText(path);
 
-            Console.WriteLine(GetSoldProducts(context));
+            Console.WriteLine(GetCategoriesByProductsCount(context));
         }
 
         //Problem 1
@@ -148,6 +148,21 @@
 
 
             return JsonConvert.SerializeObject (usersWithProducts, Formatting.Indented);
+        }
+
+        //Problem 7
+        public static string GetCategoriesByProductsCount(ProductShopContext context)
+        {
+            IMapper mapper = CreateMapper();
+
+            var categories = context.Categories
+                .OrderByDescending(c => c.CategoriesProducts.Count())
+                .Include(p => p.CategoriesProducts)               
+                .ProjectTo<ExportCategoryDto> (mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .ToArray();
+
+            return JsonConvert.SerializeObject(categories, Formatting.Indented);
         }
         private static IMapper CreateMapper()
         {
