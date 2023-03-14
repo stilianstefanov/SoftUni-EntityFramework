@@ -6,6 +6,9 @@
     using Data;
     using DTOs.Import;
     using ProductShop.Models;
+    using Microsoft.EntityFrameworkCore;
+    using AutoMapper.QueryableExtensions;
+    using ProductShop.DTOs.Export;
 
     public class StartUp
     {
@@ -17,7 +20,7 @@
 
             string inputJson = File.ReadAllText(path);
 
-            Console.WriteLine(ImportCategoryProducts(context, inputJson));
+            Console.WriteLine(GetProductsInRange(context));
         }
 
         //Problem 1
@@ -111,6 +114,22 @@
             context.SaveChanges();
 
             return $"Successfully imported {categoryProducts.Count}";
+        }
+
+        //Problem 5
+        public static string GetProductsInRange(ProductShopContext context)
+        {
+            IMapper mapper = CreateMapper();
+
+            var products = context.Products
+                .Where(p => p.Price >= 500 && p.Price <= 1000)
+                .OrderBy(p => p.Price)
+                .Include(p => p.Seller)
+                .AsNoTracking()
+                .ProjectTo<ExportProductInRangeDto>(mapper.ConfigurationProvider)
+                .ToArray();
+
+            return JsonConvert.SerializeObject(products, Formatting.Indented);
         }
 
         private static IMapper CreateMapper()
