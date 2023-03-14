@@ -10,6 +10,8 @@
         public ProductShopProfile() 
         {
             this.CreateMap<ImportUserDto, User>();
+
+            this.CreateMap<ImportProductDto, Product>();
         }       
     }
 }
