@@ -9,6 +9,7 @@
     using Microsoft.EntityFrameworkCore;
     using AutoMapper.QueryableExtensions;
     using ProductShop.DTOs.Export;
+    using Newtonsoft.Json.Serialization;
 
     public class StartUp
     {
@@ -20,7 +21,7 @@
 
             string inputJson = File.ReadAllText(path);
 
-            Console.WriteLine(GetCategoriesByProductsCount(context));
+            Console.WriteLine(GetUsersWithProducts(context));
         }
 
         //Problem 1
@@ -164,6 +165,53 @@
 
             return JsonConvert.SerializeObject(categories, Formatting.Indented);
         }
+
+        //Problem 8
+        public static string GetUsersWithProducts(ProductShopContext context)
+        {
+            IContractResolver contractResolver = ConfigureCamelCaseNaming();
+
+            var users = context
+                .Users
+                .Where(u => u.ProductsSold.Any(p => p.Buyer != null))
+                .Select(u => new
+                {                    
+                    u.FirstName,
+                    u.LastName,
+                    u.Age,
+                    SoldProducts = new
+                    {                   
+                        Count = u.ProductsSold
+                            .Count(p => p.Buyer != null),
+                        Products = u.ProductsSold
+                            .Where(p => p.Buyer != null)
+                            .Select(p => new
+                            {                               
+                                p.Name,
+                                p.Price
+                            })
+                            .ToArray()
+                    }
+                })
+                .OrderByDescending(u => u.SoldProducts.Count)
+                .AsNoTracking()
+                .ToArray();
+
+            var userWrapperDto = new
+            {
+                UsersCount = users.Length,
+                Users = users
+            };
+
+            return JsonConvert.SerializeObject(userWrapperDto,
+                Formatting.Indented,
+                new JsonSerializerSettings()
+                {
+                    ContractResolver = contractResolver,
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+        }
+
         private static IMapper CreateMapper()
         {
             IMapper mapper = new Mapper(new MapperConfiguration(cfg =>
@@ -172,6 +220,16 @@
             }));
 
             return mapper;
+        }
+
+        private static IContractResolver ConfigureCamelCaseNaming()
+        {
+            IContractResolver contractResolver =  new DefaultContractResolver()
+            {
+                NamingStrategy = new CamelCaseNamingStrategy(false, true)
+            };
+
+            return contractResolver;
         }
     }
 }

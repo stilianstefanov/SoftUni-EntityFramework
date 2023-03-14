@@ -32,6 +32,7 @@
                 .ForMember(d => d.ProductsCount, opt => opt.MapFrom(s => s.CategoriesProducts.Count))
                 .ForMember(d => d.AveragePrice, opt => opt.MapFrom(s => s.CategoriesProducts.Average(p => p.Product.Price).ToString("F2")))
                 .ForMember(d => d.TotalRavenue, opt => opt.MapFrom(s => s.CategoriesProducts.Sum(p => p.Product.Price).ToString("F2")));
+                          
         }       
     }
 }
