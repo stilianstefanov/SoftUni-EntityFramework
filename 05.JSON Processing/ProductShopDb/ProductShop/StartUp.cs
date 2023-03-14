@@ -20,7 +20,7 @@
 
             string inputJson = File.ReadAllText(path);
 
-            Console.WriteLine(GetProductsInRange(context));
+            Console.WriteLine(GetSoldProducts(context));
         }
 
         //Problem 1
@@ -132,6 +132,23 @@
             return JsonConvert.SerializeObject(products, Formatting.Indented);
         }
 
+        //Problem 6
+        public static string GetSoldProducts(ProductShopContext context)
+        {
+            IMapper mapper = CreateMapper();
+
+            var usersWithProducts = context.Users
+                .Where(u => u.ProductsSold.Any(p => p.BuyerId != null))
+                .Include(p => p.ProductsSold)
+                .OrderBy(u => u.LastName)
+                .ThenBy(u => u.FirstName)
+                .ProjectTo<ExportUserWithSoldItemDto> (mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .ToArray();
+
+
+            return JsonConvert.SerializeObject (usersWithProducts, Formatting.Indented);
+        }
         private static IMapper CreateMapper()
         {
             IMapper mapper = new Mapper(new MapperConfiguration(cfg =>
