@@ -13,11 +13,11 @@
         {
             using CarDealerContext context = new CarDealerContext();
 
-            string path = @"..\..\..\Datasets\parts.json";
+            string path = @"..\..\..\Datasets\cars.json";
 
             string inputJson = File.ReadAllText(path);
 
-            Console.WriteLine(ImportParts(context, inputJson));
+            Console.WriteLine(ImportCars(context, inputJson));
         }
 
         //Problem 9
@@ -65,6 +65,43 @@
             context.SaveChanges();
 
             return $"Successfully imported {parts.Count}.";
+        }
+
+        //Problem 11
+        public static string ImportCars(CarDealerContext context, string inputJson)
+        {            
+            ImportCarDto[] importCarDtos = JsonConvert.DeserializeObject<ImportCarDto[]>(inputJson)!;
+
+            ICollection<Car> cars = new HashSet<Car>();
+            ICollection<PartCar> parts = new HashSet<PartCar>();
+
+            foreach (var icDto in importCarDtos)
+            {
+                Car newCar = new Car()
+                {
+                    Make = icDto.Make,
+                    Model = icDto.Model,
+                    TravelledDistance = icDto.TravelledDistance,
+                };
+
+                cars.Add(newCar);
+
+                foreach (var partId in icDto.PartsCarsIds.Distinct())
+                {
+                    parts.Add(new PartCar()
+                    {
+                        Car = newCar,
+                        PartId = partId
+                    });
+                }                              
+            }
+
+            context.Cars.AddRange(cars);
+            context.PartsCars.AddRange(parts);
+
+            context.SaveChanges();
+
+            return $"Successfully imported {cars.Count}.";
         }
 
 
