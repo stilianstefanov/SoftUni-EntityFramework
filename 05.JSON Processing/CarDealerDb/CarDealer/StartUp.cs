@@ -6,6 +6,8 @@
     using DTOs.Import;
     using Data;   
     using Models;
+    using Newtonsoft.Json.Serialization;
+    using System.Globalization;
 
     public class StartUp
     {
@@ -17,7 +19,7 @@
 
             string inputJson = File.ReadAllText(path);
 
-            Console.WriteLine(ImportSales(context, inputJson));
+            Console.WriteLine(GetOrderedCustomers(context));
         }
 
         //Problem 9
@@ -146,12 +148,39 @@
             return $"Successfully imported {sales.Count}.";
         }
 
+        //Problem 14
+        public static string GetOrderedCustomers(CarDealerContext context)
+        {            
+            var orderedCustomers = context.Customers
+                .OrderBy(c => c.BirthDate)
+                .ThenBy(c => c.IsYoungDriver)
+                .Select(c => new
+                {
+                    c.Name,
+                    BirthDate = c.BirthDate.ToString(@"dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    c.IsYoungDriver
+                })
+                .ToArray();
+
+            return JsonConvert.SerializeObject(orderedCustomers, Formatting.Indented);
+        }
+
         private static IMapper CreateMapper()
         {
             return new Mapper(new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<CarDealerProfile>();
             }));
+        }
+
+        private static IContractResolver ConfigureCamelCaseNaming()
+        {
+            IContractResolver contractResolver = new DefaultContractResolver()
+            {
+                NamingStrategy = new CamelCaseNamingStrategy(false, true)
+            };
+
+            return contractResolver;
         }
     }
 }
