@@ -13,11 +13,11 @@
         {
             using CarDealerContext context = new CarDealerContext();
 
-            string path = @"..\..\..\Datasets\customers.json";
+            string path = @"..\..\..\Datasets\sales.json";
 
             string inputJson = File.ReadAllText(path);
 
-            Console.WriteLine(ImportCustomers(context, inputJson));
+            Console.WriteLine(ImportSales(context, inputJson));
         }
 
         //Problem 9
@@ -123,6 +123,27 @@
             context.SaveChanges();
 
             return $"Successfully imported {customers.Count}.";
+        }
+
+        //Problem 13
+        public static string ImportSales(CarDealerContext context, string inputJson)
+        {
+            IMapper mapper = CreateMapper();
+
+            ImportSaleDto[] importSaleDtos = JsonConvert.DeserializeObject<ImportSaleDto[]>(inputJson)!;
+
+            ICollection<Sale> sales = new HashSet<Sale>();
+
+            foreach (var isDto in importSaleDtos)
+            {
+                sales.Add(mapper.Map<Sale>(isDto));
+            }
+
+            context.Sales.AddRange(sales);
+
+            context.SaveChanges();
+
+            return $"Successfully imported {sales.Count}.";
         }
 
         private static IMapper CreateMapper()
