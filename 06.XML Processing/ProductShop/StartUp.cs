@@ -13,11 +13,11 @@
         {
             using ProductShopContext context = new ProductShopContext();
 
-            string path = @"..\..\..\Datasets\products.xml";
+            string path = @"..\..\..\Datasets\categories.xml";
 
             string input = File.ReadAllText(path);
 
-            Console.WriteLine(ImportProducts(context, input));
+            Console.WriteLine(ImportCategories(context, input));
         }
 
         //Problem 1
@@ -43,10 +43,10 @@
         //Problem 2
         public static string ImportProducts(ProductShopContext context, string inputXml)
         {
-            XmlHelper XmlHelper = new XmlHelper();
+            XmlHelper xmlHelper = new XmlHelper();
             IMapper mapper = InitializeMapper();
 
-            ImportProductDto[] importProductDtos = XmlHelper.Deserialize<ImportProductDto[]>(inputXml, "Products");
+            ImportProductDto[] importProductDtos = xmlHelper.Deserialize<ImportProductDto[]>(inputXml, "Products");
 
             ICollection<Product> validProducts = new HashSet<Product>();
             foreach (var dto in importProductDtos)
@@ -63,7 +63,26 @@
         //Problem 3
         public static string ImportCategories(ProductShopContext context, string inputXml)
         {
+            XmlHelper xmlHelper = new XmlHelper();
+            IMapper mapper = InitializeMapper();
 
+            ImportCategoryDto[] importCategoryDtos = xmlHelper.Deserialize<ImportCategoryDto[]>(inputXml, "Categories");
+
+            ICollection<Category> validCateogries = new HashSet<Category>();
+            foreach (var dto in importCategoryDtos)
+            {
+                if (string.IsNullOrEmpty(dto.Name))
+                {
+                    continue;
+                }
+
+                validCateogries.Add(mapper.Map<Category>(dto));
+            }
+
+            context.Categories.AddRange(validCateogries);
+            context.SaveChanges();
+
+            return $"Successfully imported {validCateogries.Count}";
         }
 
         private static IMapper InitializeMapper()
