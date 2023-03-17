@@ -13,11 +13,11 @@
         {
             using ProductShopContext context = new ProductShopContext();
 
-            string path = @"..\..\..\Datasets\categories.xml";
+            string path = @"..\..\..\Datasets\categories-products.xml";
 
             string input = File.ReadAllText(path);
 
-            Console.WriteLine(ImportCategories(context, input));
+            Console.WriteLine(ImportCategoryProducts(context, input));
         }
 
         //Problem 1
@@ -83,6 +83,33 @@
             context.SaveChanges();
 
             return $"Successfully imported {validCateogries.Count}";
+        }
+
+        //Problem 4
+        public static string ImportCategoryProducts(ProductShopContext context, string inputXml)
+        {
+            XmlHelper xmlHelper = new XmlHelper();
+            IMapper mapper = InitializeMapper();
+
+            ImportCategoryProductDto[] importCategoryProductDtos =
+                xmlHelper.Deserialize<ImportCategoryProductDto[]>(inputXml, "CategoryProducts");
+
+            ICollection<CategoryProduct> validCategoryProducts = new HashSet<CategoryProduct>();
+            foreach (var dto in importCategoryProductDtos)
+            {
+                if (!context.Categories.Any(c => c.Id == dto.CategoryId)
+                    || !context.Products.Any(p => p.Id == dto.ProductId))
+                {
+                    continue;
+                }
+
+                validCategoryProducts.Add(mapper.Map<CategoryProduct>(dto));
+            }
+
+            context.CategoryProducts.AddRange(validCategoryProducts);
+            context.SaveChanges();
+
+            return $"Successfully imported {validCategoryProducts.Count}";
         }
 
         private static IMapper InitializeMapper()
