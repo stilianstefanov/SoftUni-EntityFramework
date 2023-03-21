@@ -13,6 +13,12 @@
 
             this.CreateMap<ImportPartDto, Part>()
                 .ForMember(d => d.SupplierId, opt => opt.MapFrom(s => s.SupplierId!.Value));
+
+            this.CreateMap<ImportCustomerDto, Customer>()
+                .ForMember(d => d.BirthDate, opt => opt.MapFrom(s => DateTime.Parse(s.BirthDate)));
+
+            this.CreateMap<ImportSaleDto, Sale>();
+                
         }
     }
 }
