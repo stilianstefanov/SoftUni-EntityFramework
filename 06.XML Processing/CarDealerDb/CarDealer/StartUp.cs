@@ -7,6 +7,8 @@
     using Utilities;
     using Models;
     using System.IO;
+    using CarDealer.DTOs.Export;
+    using AutoMapper.QueryableExtensions;
 
     public class StartUp
     {
@@ -18,7 +20,7 @@
 
             //string input = File.ReadAllText(path);
 
-            Console.WriteLine();
+            Console.WriteLine(GetLocalSuppliers(context));
         }
 
         //Problem 9
@@ -157,6 +159,53 @@
             context.SaveChanges();
 
             return $"Successfully imported {sales.Count}";
+        }
+
+        //Problem 14
+        public static string GetCarsWithDistance(CarDealerContext context)
+        {
+            XmlHelper xmlHelper= new XmlHelper();
+            IMapper mapper = InitializeMapper();
+
+            ExportCarWithDistanceDto[] carDtos = context.Cars
+                .Where(c => c.TraveledDistance > 2000000)
+                .OrderBy(c => c.Make)
+                .ThenBy(c => c.Model)
+                .Take(10)
+                .ProjectTo<ExportCarWithDistanceDto>(mapper.ConfigurationProvider)
+                .ToArray();
+
+            return xmlHelper.Serialize<ExportCarWithDistanceDto[]>(carDtos, "cars");
+        }
+
+        //Problem 15
+        public static string GetCarsFromMakeBmw(CarDealerContext context)
+        {
+            XmlHelper xmlHelper= new XmlHelper();
+            IMapper mapper = InitializeMapper();
+
+            ExportCarBMWDto[] carDtos = context.Cars
+                .Where(c => c.Make.ToUpper() == "BMW")
+                .OrderBy(c => c.Model)
+                .ThenByDescending(c => c.TraveledDistance)
+                .ProjectTo<ExportCarBMWDto>(mapper.ConfigurationProvider)
+                .ToArray();
+
+            return xmlHelper.Serialize<ExportCarBMWDto[]>(carDtos, "cars");
+        }
+
+        //Problem 16 
+        public static string GetLocalSuppliers(CarDealerContext context)
+        {
+            XmlHelper xmlHelper = new XmlHelper();
+            IMapper mapper = InitializeMapper();
+
+            ExportLocalSupplierDto[] supplierDtos = context.Suppliers
+                .Where(s => !s.IsImporter)
+                .ProjectTo<ExportLocalSupplierDto>(mapper.ConfigurationProvider)
+                .ToArray();
+
+            return xmlHelper.Serialize<ExportLocalSupplierDto[]>(supplierDtos, "suppliers");
         }
 
         private static IMapper InitializeMapper()
