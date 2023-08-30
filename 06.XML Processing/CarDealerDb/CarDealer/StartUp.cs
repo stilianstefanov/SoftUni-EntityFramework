@@ -15,13 +15,27 @@
     {
         public static void Main()
         {
-            using CarDealerContext context = new CarDealerContext();
+            int[] ints = { 1, 2, 3, 4, 5, 55, 100, 110 };
 
-            //string path = @"../../../Datasets/sales.xml";
+            int[] maxElemets = new int[2];
 
-            //string input = File.ReadAllText(path);
+            for (int i = 0; i < ints.Length; i++)
+            {
+                if (ints[i] > maxElemets[0])
+                {
+                    maxElemets[0] = ints[i];
+                }              
+            }
 
-            Console.WriteLine(GetSalesWithAppliedDiscount(context));
+            for (int i = 0; i < ints.Length; i++)
+            {
+                if (ints[i] > maxElemets[1] && ints[i] < maxElemets[0])
+                {
+                    maxElemets[1] = ints[i];
+                }
+            }
+
+            Console.WriteLine(string.Join(", " , maxElemets));
         }
 
         //Problem 9
