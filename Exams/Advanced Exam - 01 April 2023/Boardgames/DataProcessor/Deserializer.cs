@@ -74,7 +74,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportSellerDto[] sellerDtos = JsonConvert.DeserializeObject<ImportSellerDto[]>(jsonString)!;
+            var sellerDtos = JsonConvert.DeserializeObject<ImportSellerDto[]>(jsonString)!;
 
             ICollection<Seller> validSellers = new HashSet<Seller>();
             foreach (var sellerDto in sellerDtos)
@@ -93,9 +93,9 @@
                     Website = sellerDto.Website
                 };
 
-                foreach (var boardGameid in sellerDto.Boardgames.Distinct())
+                foreach (var boardGameId in sellerDto.Boardgames.Distinct())
                 {
-                    if (!context.Boardgames.Any(b => b.Id == boardGameid))
+                    if (!context.Boardgames.Any(b => b.Id == boardGameId))
                     {
                         sb.AppendLine(ErrorMessage);
                         continue;
@@ -103,7 +103,7 @@
 
                     seller.BoardgamesSellers.Add(new BoardgameSeller()
                     {
-                        BoardgameId = boardGameid,
+                        BoardgameId = boardGameId,
                         Seller = seller
                     });
                 }
