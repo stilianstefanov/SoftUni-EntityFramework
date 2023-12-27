@@ -28,7 +28,7 @@ namespace TeisterMask.DataProcessor
         {
             var sb = new StringBuilder();
 
-            ImportProjectDto[] projectDtos = Deserialize<ImportProjectDto[]>(xmlString, "Projects");
+            var projectDtos = Deserialize<ImportProjectDto[]>(xmlString, "Projects");
 
             ICollection<Project> validProjects = new HashSet<Project>();
             foreach (var projectDto in projectDtos)
@@ -39,14 +39,14 @@ namespace TeisterMask.DataProcessor
                     continue;
                 }
 
-                bool isOpenDateValid = DateTime.TryParseExact(projectDto.OpenDate, "dd/MM/yyyy"
-                    , CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime openDate);
+                var isOpenDateValid = DateTime.TryParseExact(projectDto.OpenDate, "dd/MM/yyyy"
+                    , CultureInfo.InvariantCulture, DateTimeStyles.None, out var openDate);
 
                 DateTime? dueDate = null;
                 if (!string.IsNullOrEmpty(projectDto.DueDate))
                 {
-                    bool iSDueDateValid = DateTime.TryParseExact(projectDto.DueDate, "dd/MM/yyyy"
-                    , CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime resultDueDate);
+                    var iSDueDateValid = DateTime.TryParseExact(projectDto.DueDate, "dd/MM/yyyy"
+                    , CultureInfo.InvariantCulture, DateTimeStyles.None, out var resultDueDate);
 
                     if (!iSDueDateValid)
                     {
@@ -63,7 +63,7 @@ namespace TeisterMask.DataProcessor
                     continue;
                 }
 
-                Project project = new Project()
+                var project = new Project()
                 {
                     Name = projectDto.Name,
                     OpenDate = openDate,
@@ -78,11 +78,11 @@ namespace TeisterMask.DataProcessor
                         continue;
                     }
 
-                    bool isTaskOpenDateValid = DateTime.TryParseExact(taskDto.OpenDate, "dd/MM/yyyy"
-                    , CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime taskOpenDate);
+                    var isTaskOpenDateValid = DateTime.TryParseExact(taskDto.OpenDate, "dd/MM/yyyy"
+                    , CultureInfo.InvariantCulture, DateTimeStyles.None, out var taskOpenDate);
 
-                    bool isTaskDueDateValid = DateTime.TryParseExact(taskDto.DueDate, "dd/MM/yyyy"
-                    , CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime taskDueDate);
+                    var isTaskDueDateValid = DateTime.TryParseExact(taskDto.DueDate, "dd/MM/yyyy"
+                    , CultureInfo.InvariantCulture, DateTimeStyles.None, out var taskDueDate);
 
                     if (!isTaskOpenDateValid || !isTaskDueDateValid)
                     {
@@ -129,7 +129,7 @@ namespace TeisterMask.DataProcessor
         {
             var sb = new StringBuilder();
 
-            ImportEmpoyeeDto[] empoyeeDtos = JsonConvert.DeserializeObject<ImportEmpoyeeDto[]>(jsonString)!;
+            var empoyeeDtos = JsonConvert.DeserializeObject<ImportEmpoyeeDto[]>(jsonString)!;
 
             ICollection<Employee> validEmployees = new HashSet<Employee>();
             foreach (var employeeDto in empoyeeDtos)
@@ -182,12 +182,12 @@ namespace TeisterMask.DataProcessor
 
         private static T Deserialize<T>(string inputXml, string rootName)
         {
-            XmlRootAttribute xmlRoot = new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlRoot = new XmlRootAttribute(rootName);
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            using StringReader reader = new StringReader(inputXml);
-            T deserializedDtos =
+            using var reader = new StringReader(inputXml);
+            var deserializedDtos =
                 (T)xmlSerializer.Deserialize(reader);
 
             return deserializedDtos;
