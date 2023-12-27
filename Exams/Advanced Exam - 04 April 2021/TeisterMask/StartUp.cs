@@ -52,7 +52,7 @@
             Console.WriteLine(exportProjectWithTheirTasks);
             File.WriteAllText(exportDir + "Actual Result - ExportProjectWithTheirTasks.xml", exportProjectWithTheirTasks);
 
-            DateTime dateTime = DateTime.ParseExact("25/01/2018", "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            var dateTime = DateTime.ParseExact("25/01/2018", "dd/MM/yyyy", CultureInfo.InvariantCulture);
             var exportMostBusiestEmployees = DataProcessor.Serializer.ExportMostBusiestEmployees(context, dateTime);
             Console.WriteLine(exportMostBusiestEmployees);
             File.WriteAllText(exportDir + "Actual Result - ExportMostBusiestEmployees.json", exportMostBusiestEmployees);
