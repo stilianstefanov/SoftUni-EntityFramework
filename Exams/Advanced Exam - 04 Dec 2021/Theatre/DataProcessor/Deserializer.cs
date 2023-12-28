@@ -29,7 +29,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportPlayDto[] playDtos = Deserialize<ImportPlayDto[]>(xmlString, "Plays");
+            var playDtos = Deserialize<ImportPlayDto[]>(xmlString, "Plays");
 
             ICollection<Play> validPlays = new HashSet<Play>();
             foreach (var playDto in playDtos)
@@ -40,8 +40,8 @@
                     continue;
                 }
 
-                bool isDurationValid = TimeSpan.TryParseExact(playDto.Duration, "c", CultureInfo.InvariantCulture, out TimeSpan duration);
-                bool IsGenreValid = Enum.TryParse<Genre>(playDto.Genre, out Genre genre);
+                var isDurationValid = TimeSpan.TryParseExact(playDto.Duration, "c", CultureInfo.InvariantCulture, out var duration);
+                var IsGenreValid = Enum.TryParse<Genre>(playDto.Genre, out var genre);
 
                 if (!IsGenreValid || !isDurationValid)
                 {
@@ -55,7 +55,7 @@
                     continue;
                 }
 
-                Play play = new Play()
+                var play = new Play()
                 {
                     Title = playDto.Title!,
                     Duration = duration,
@@ -79,7 +79,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportCastDto[] castDtos = Deserialize<ImportCastDto[]>(xmlString, "Casts");
+            var castDtos = Deserialize<ImportCastDto[]>(xmlString, "Casts");
 
             ICollection<Cast> validCasts = new HashSet<Cast>();
             foreach (var dto in castDtos)
@@ -90,7 +90,7 @@
                     continue;
                 }
 
-                Cast cast = new Cast()
+                var cast = new Cast()
                 {
                     FullName = dto.FullName!,
                     IsMainCharacter = dto.IsMainCharacter,
@@ -112,7 +112,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportTheatreDto[] theatreDtos = JsonConvert.DeserializeObject<ImportTheatreDto[]>(jsonString)!;
+            var theatreDtos = JsonConvert.DeserializeObject<ImportTheatreDto[]>(jsonString)!;
 
             ICollection<Theatre> validTheatres = new HashSet<Theatre>();
             foreach (var theatreDto in theatreDtos)
@@ -169,12 +169,12 @@
 
         private static T Deserialize<T>(string inputXml, string rootName)
         {
-            XmlRootAttribute xmlRoot = new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlRoot = new XmlRootAttribute(rootName);
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            using StringReader reader = new StringReader(inputXml);
-            T deserializedDtos =
+            using var reader = new StringReader(inputXml);
+            var deserializedDtos =
                 (T)xmlSerializer.Deserialize(reader);
 
             return deserializedDtos;
