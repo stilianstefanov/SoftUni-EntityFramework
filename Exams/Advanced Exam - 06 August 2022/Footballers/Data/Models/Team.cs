@@ -20,6 +20,6 @@
 
         public int Trophies { get; set; }
 
-        public ICollection<TeamFootballer> TeamsFootballers { get; set; } = null!;
+        public ICollection<TeamFootballer> TeamsFootballers { get; set; }
     }
 }

@@ -32,6 +32,6 @@
 
         public Coach Coach { get; set; } = null!;
 
-        public ICollection<TeamFootballer> TeamsFootballers { get; set; } = null!;
+        public ICollection<TeamFootballer> TeamsFootballers { get; set; }
     }
 }

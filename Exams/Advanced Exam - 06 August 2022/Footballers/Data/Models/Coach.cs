@@ -17,6 +17,6 @@
 
         public string Nationality { get; set; } = null!;
 
-        public ICollection<Footballer> Footballers { get; set; } = null!;
+        public ICollection<Footballer> Footballers { get; set; }
     }
 }
