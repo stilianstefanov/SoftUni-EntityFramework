@@ -24,7 +24,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportCoachDto[] coachDtos = Deserialize<ImportCoachDto[]>(xmlString, "Coaches");
+            var coachDtos = Deserialize<ImportCoachDto[]>(xmlString, "Coaches");
 
             ICollection<Coach> validCoaches = new List<Coach>();
             foreach (var dto in coachDtos)
@@ -41,7 +41,7 @@
                     continue;
                 }
 
-                Coach coach = new Coach()
+                var coach = new Coach()
                 {
                     Name = dto.Name,
                     Nationality = dto.Nationality,
@@ -55,11 +55,11 @@
                         continue;
                     }
 
-                    bool isStartDateValid = DateTime.TryParseExact(footBallerDto.ContractStartDate, "dd/MM/yyyy",
-                        CultureInfo.InvariantCulture, DateTimeStyles.None,  out DateTime startDate);
+                    var isStartDateValid = DateTime.TryParseExact(footBallerDto.ContractStartDate, "dd/MM/yyyy",
+                        CultureInfo.InvariantCulture, DateTimeStyles.None,  out var startDate);
 
-                    bool isEndDateValid = DateTime.TryParseExact(footBallerDto.ContractEndDate, "dd/MM/yyyy",
-                        CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate);
+                    var isEndDateValid = DateTime.TryParseExact(footBallerDto.ContractEndDate, "dd/MM/yyyy",
+                        CultureInfo.InvariantCulture, DateTimeStyles.None, out var endDate);
 
                     if (!isStartDateValid || !isEndDateValid)
                     {
@@ -97,7 +97,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportTeamDto[] teamDtos = JsonConvert.DeserializeObject<ImportTeamDto[]>(jsonString)!;
+            var teamDtos = JsonConvert.DeserializeObject<ImportTeamDto[]>(jsonString)!;
 
             ICollection<Team> validTeams = new List<Team>();
             foreach (var dto in teamDtos)
@@ -114,7 +114,7 @@
                     continue;
                 }
 
-                Team team = new Team()
+                var team = new Team()
                 {
                     Name = dto.Name,
                     Nationality = dto.Nationality,
@@ -156,12 +156,12 @@
 
         private static T Deserialize<T>(string inputXml, string rootName)
         {
-            XmlRootAttribute xmlRoot = new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlRoot = new XmlRootAttribute(rootName);
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            using StringReader reader = new StringReader(inputXml);
-            T deserializedDtos =
+            using var reader = new StringReader(inputXml);
+            var deserializedDtos =
                 (T)xmlSerializer.Deserialize(reader);
 
             return deserializedDtos;
