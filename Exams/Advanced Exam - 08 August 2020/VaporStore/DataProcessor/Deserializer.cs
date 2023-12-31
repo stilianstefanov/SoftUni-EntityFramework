@@ -24,7 +24,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportGameDto[] gameDtos = JsonConvert.DeserializeObject<ImportGameDto[]>(jsonString)!;
+            var gameDtos = JsonConvert.DeserializeObject<ImportGameDto[]>(jsonString)!;
 
             ICollection<Game> validGames = new List<Game>();
 
@@ -48,16 +48,16 @@
                     continue;
                 }
 
-                bool isReleaseDateValid = DateTime.TryParseExact(gameDto.ReleaseDate, "yyyy-MM-dd", 
-                    CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime releaseDate);
+                var isReleaseDateValid = DateTime.TryParseExact(gameDto.ReleaseDate, "yyyy-MM-dd", 
+                    CultureInfo.InvariantCulture, DateTimeStyles.None, out var releaseDate);
                 if (!isReleaseDateValid)
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                Developer? developer = developers.FirstOrDefault(d => d.Name == gameDto.Developer);
-                Genre? genre = genres.FirstOrDefault(g => g.Name == gameDto.Genre);
+                var developer = developers.FirstOrDefault(d => d.Name == gameDto.Developer);
+                var genre = genres.FirstOrDefault(g => g.Name == gameDto.Genre);
 
                 if (developer == null)
                 {
@@ -77,7 +77,7 @@
                     genres.Add(genre);
                 }
 
-                Game game = new Game()
+                var game = new Game()
                 {
                     Name = gameDto.Name,
                     Price = gameDto.Price,
@@ -93,7 +93,7 @@
                         continue;
                     }
 
-                    Tag? tag = tags.FirstOrDefault(t => t.Name == tagName);
+                    var tag = tags.FirstOrDefault(t => t.Name == tagName);
 
                     if (tag == null)
                     {
@@ -125,7 +125,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportUserDto[] userDtos = JsonConvert.DeserializeObject<ImportUserDto[]>(jsonString)!;
+            var userDtos = JsonConvert.DeserializeObject<ImportUserDto[]>(jsonString)!;
 
             ICollection<User> validUsers = new HashSet<User>();
             foreach (var userDto in userDtos)
@@ -143,7 +143,7 @@
                     continue;
                 }
 
-                User user = new User()
+                var user = new User()
                 {
                     FullName = userDto.FullName!,
                     Username = userDto.Username!,
@@ -151,11 +151,11 @@
                     Age = userDto.Age
                 };
 
-                bool isValidCardDto = true;
+                var isValidCardDto = true;
 
                 foreach (var cardDto in userDto.Cards)
                 {
-                    bool isCardTypeValid = Enum.TryParse<CardType>(cardDto.Type, out CardType cardType);
+                    var isCardTypeValid = Enum.TryParse<CardType>(cardDto.Type, out var cardType);
                     if (!isCardTypeValid)
                     {
                         isValidCardDto = false;
@@ -189,7 +189,7 @@
         public static string ImportPurchases(VaporStoreDbContext context, string xmlString)
         {
             var sb = new StringBuilder();
-            ImportPurchaseDto[] purchaseDtos = Deserialize<ImportPurchaseDto[]>(xmlString, "Purchases");
+            var purchaseDtos = Deserialize<ImportPurchaseDto[]>(xmlString, "Purchases");
 
             ICollection<Purchase> validPurchases = new HashSet<Purchase>();
             foreach (var purchaseDto in purchaseDtos)
@@ -200,8 +200,8 @@
                     continue;
                 }
 
-                Game? game = context.Games.FirstOrDefault(g => g.Name == purchaseDto.GameTitle);
-                Card? card = context.Cards.FirstOrDefault(c => c.Number == purchaseDto.CardNumber);
+                var game = context.Games.FirstOrDefault(g => g.Name == purchaseDto.GameTitle);
+                var card = context.Cards.FirstOrDefault(c => c.Number == purchaseDto.CardNumber);
 
                 if (game == null || card == null)
                 {
@@ -209,10 +209,10 @@
                     continue;
                 }
 
-                bool isTypeValid = Enum.TryParse<PurchaseType>(purchaseDto.Type, out PurchaseType type);
+                var isTypeValid = Enum.TryParse<PurchaseType>(purchaseDto.Type, out var type);
 
-                bool isDateValid = DateTime.TryParseExact(purchaseDto.Date, "dd/MM/yyyy HH:mm",
-                    CultureInfo.InvariantCulture, DateTimeStyles.None, out  DateTime date);
+                var isDateValid = DateTime.TryParseExact(purchaseDto.Date, "dd/MM/yyyy HH:mm",
+                    CultureInfo.InvariantCulture, DateTimeStyles.None, out  var date);
 
                 if (!isTypeValid || !isDateValid)
                 {
@@ -220,7 +220,7 @@
                     continue;
                 }
 
-                Purchase purchase = new Purchase()
+                var purchase = new Purchase()
                 {
                     Type = type,
                     ProductKey = purchaseDto.ProductKey!,
@@ -249,12 +249,12 @@
 
         private static T Deserialize<T>(string inputXml, string rootName)
         {
-            XmlRootAttribute xmlRoot = new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlRoot = new XmlRootAttribute(rootName);
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            using StringReader reader = new StringReader(inputXml);
-            T deserializedDtos =
+            using var reader = new StringReader(inputXml);
+            var deserializedDtos =
                 (T)xmlSerializer.Deserialize(reader);
 
             return deserializedDtos;
