@@ -24,7 +24,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportDepartmentDto[] departmentDtos = JsonConvert.DeserializeObject<ImportDepartmentDto[]>(jsonString)!;
+            var departmentDtos = JsonConvert.DeserializeObject<ImportDepartmentDto[]>(jsonString)!;
 
             ICollection<Department> validDepartments = new HashSet<Department>();
             foreach (var departmentDto in departmentDtos)
@@ -41,7 +41,7 @@
                     continue;
                 }
 
-                Department department = new Department()
+                var department = new Department()
                 {
                     Name = departmentDto.Name
                 };
@@ -69,7 +69,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportPrisonerDto[] prisonerDtos = JsonConvert.DeserializeObject<ImportPrisonerDto[]>(jsonString)!;
+            var prisonerDtos = JsonConvert.DeserializeObject<ImportPrisonerDto[]>(jsonString)!;
 
             ICollection<Prisoner> validPrisoners = new HashSet<Prisoner>();
             foreach (var prisonerDto in prisonerDtos)
@@ -80,8 +80,8 @@
                     continue;
                 }
 
-                bool isIncarcerationDateValid = DateTime.TryParseExact(prisonerDto.IncarcerationDate, "dd/MM/yyyy",
-                    CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime incarcerationDate);
+                var isIncarcerationDateValid = DateTime.TryParseExact(prisonerDto.IncarcerationDate, "dd/MM/yyyy",
+                    CultureInfo.InvariantCulture, DateTimeStyles.None, out var incarcerationDate);
 
                 if (!isIncarcerationDateValid)
                 {
@@ -92,8 +92,8 @@
                 DateTime? releaseDate = null;
                 if (!string.IsNullOrEmpty(prisonerDto.ReleaseDate))
                 {
-                    bool isReleaseDateValid = DateTime.TryParseExact(prisonerDto.ReleaseDate, "dd/MM/yyyy",
-                        CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime releaseDateResult);
+                    var isReleaseDateValid = DateTime.TryParseExact(prisonerDto.ReleaseDate, "dd/MM/yyyy",
+                        CultureInfo.InvariantCulture, DateTimeStyles.None, out var releaseDateResult);
 
                     if (!isReleaseDateValid)
                     {
@@ -112,7 +112,7 @@
                     }
                 }
 
-                Prisoner prisoner = new Prisoner()
+                var prisoner = new Prisoner()
                 {
                     FullName = prisonerDto.FullName!,
                     Nickname = prisonerDto.Nickname!,
@@ -147,7 +147,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportOfficerDto[] officerDtos = Deserialize<ImportOfficerDto[]>(xmlString, "Officers");
+            var officerDtos = Deserialize<ImportOfficerDto[]>(xmlString, "Officers");
 
             ICollection<Officer> validOfficers = new HashSet<Officer>();
             foreach (var officerDto in officerDtos)
@@ -164,8 +164,8 @@
                     continue;
                 }
 
-                bool isPositionValid = Enum.TryParse<Position>(officerDto.Position, out Position position);
-                bool isWeaponValid = Enum.TryParse<Weapon>(officerDto.Weapon, out Weapon weapon);
+                var isPositionValid = Enum.TryParse<Position>(officerDto.Position, out var position);
+                var isWeaponValid = Enum.TryParse<Weapon>(officerDto.Weapon, out var weapon);
 
                 if (!isPositionValid || !isWeaponValid)
                 {
@@ -173,7 +173,7 @@
                     continue;
                 }
 
-                Officer officer = new Officer()
+                var officer = new Officer()
                 {
                     FullName = officerDto.FullName!,
                     Salary = officerDto.Salary!.Value,
@@ -206,18 +206,18 @@
             var validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(obj);
             var validationResult = new List<ValidationResult>();
 
-            bool isValid = Validator.TryValidateObject(obj, validationContext, validationResult, true);
+            var isValid = Validator.TryValidateObject(obj, validationContext, validationResult, true);
             return isValid;
         }
 
         private static T Deserialize<T>(string inputXml, string rootName)
         {
-            XmlRootAttribute xmlRoot = new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlRoot = new XmlRootAttribute(rootName);
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            using StringReader reader = new StringReader(inputXml);
-            T deserializedDtos =
+            using var reader = new StringReader(inputXml);
+            var deserializedDtos =
                 (T)xmlSerializer.Deserialize(reader);
 
             return deserializedDtos;
