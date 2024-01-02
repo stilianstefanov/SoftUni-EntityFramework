@@ -38,9 +38,9 @@
 
         public static string ExportPrisonersInbox(SoftJailDbContext context, string prisonersNames)
         {
-            string[] prNamesSplitted = prisonersNames.Split(",", StringSplitOptions.RemoveEmptyEntries);
+            var prNamesSplitted = prisonersNames.Split(",", StringSplitOptions.RemoveEmptyEntries);
 
-            ExportPrisonerDto[] prisoners = context.Prisoners
+            var prisoners = context.Prisoners
                 .Where(p => prNamesSplitted.Contains(p.FullName))
                 .ToArray()
                 .Select(p => new ExportPrisonerDto()
@@ -63,17 +63,17 @@
 
         private static string Serialize<T>(T obj, string rootName)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            XmlRootAttribute xmlRoot =
+            var xmlRoot =
                 new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+            var namespaces = new XmlSerializerNamespaces();
             namespaces.Add(string.Empty, string.Empty);
 
-            using StringWriter writer = new StringWriter(sb);
+            using var writer = new StringWriter(sb);
             xmlSerializer.Serialize(writer, obj, namespaces);
 
             return sb.ToString().TrimEnd();
