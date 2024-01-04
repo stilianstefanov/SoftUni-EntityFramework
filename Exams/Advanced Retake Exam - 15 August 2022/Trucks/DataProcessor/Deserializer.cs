@@ -23,7 +23,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportDespatcherDto[] dtos = Deserialize<ImportDespatcherDto[]>(xmlString, "Despatchers");
+            var dtos = Deserialize<ImportDespatcherDto[]>(xmlString, "Despatchers");
 
             ICollection<Despatcher> despatchers = new List<Despatcher>();
             foreach (var dto in dtos)
@@ -40,7 +40,7 @@
                     continue;
                 }
 
-                Despatcher despatcher = new Despatcher()
+                var dispatcher = new Despatcher()
                 {
                     Name = dto.Name,
                     Position = dto.Position,
@@ -59,9 +59,9 @@
                         sb.AppendLine("Invalid data!");
                         continue;
                     }
-                  
 
-                    despatcher.Trucks.Add(new Truck()
+
+                    dispatcher.Trucks.Add(new Truck()
                     {
                         RegistrationNumber = truckDto.RegistrationNumber,
                         VinNumber = truckDto.VinNumber,
@@ -72,8 +72,8 @@
                     });
                 }
 
-                despatchers.Add(despatcher);
-                sb.AppendLine($"Successfully imported despatcher - {despatcher.Name} with {despatcher.Trucks.Count} trucks.");
+                despatchers.Add(dispatcher);
+                sb.AppendLine($"Successfully imported dispatcher - {dispatcher.Name} with {dispatcher.Trucks.Count} trucks.");
             }
 
             context.Despatchers.AddRange(despatchers);
@@ -85,7 +85,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportClientDto[] dtos = JsonConvert.DeserializeObject<ImportClientDto[]>(jsonString)!;
+            var dtos = JsonConvert.DeserializeObject<ImportClientDto[]>(jsonString)!;
 
             ICollection<Client> clients = new List<Client>();
             foreach (var dto in dtos)
@@ -108,7 +108,7 @@
                     continue;
                 }
 
-                Client client = new Client()
+                var client = new Client()
                 {
                     Name = dto.Name,
                     Nationality = dto.Nationality,
@@ -150,12 +150,12 @@
 
         private static T Deserialize<T>(string inputXml, string rootName)
         {
-            XmlRootAttribute xmlRoot = new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlRoot = new XmlRootAttribute(rootName);
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            using StringReader reader = new StringReader(inputXml);
-            T deserializedDtos =
+            using var reader = new StringReader(inputXml);
+            var deserializedDtos =
                 (T)xmlSerializer.Deserialize(reader);
 
             return deserializedDtos;
