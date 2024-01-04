@@ -10,7 +10,7 @@
     {
         public static string ExportDespatchersWithTheirTrucks(TrucksContext context)
         {
-            ExportDispatcherDto[] despatchers = context.Despatchers
+            var dispatchers = context.Despatchers
                 .Where(d => d.Trucks.Any())
                 .ToArray()
                 .Select(d => new ExportDispatcherDto()
@@ -29,7 +29,7 @@
                 .ThenBy(d => d.DespatcherName)
                 .ToArray();
 
-            return Serialize<ExportDispatcherDto[]>(despatchers, "Despatchers");
+            return Serialize<ExportDispatcherDto[]>(dispatchers, "Despatchers");
         }
 
         public static string ExportClientsWithMostTrucks(TrucksContext context, int capacity)
@@ -64,17 +64,17 @@
 
         private static string Serialize<T>(T obj, string rootName)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            XmlRootAttribute xmlRoot =
+            var xmlRoot =
                 new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+            var namespaces = new XmlSerializerNamespaces();
             namespaces.Add(string.Empty, string.Empty);
 
-            using StringWriter writer = new StringWriter(sb);
+            using var writer = new StringWriter(sb);
             xmlSerializer.Serialize(writer, obj, namespaces);
 
             return sb.ToString().TrimEnd();
