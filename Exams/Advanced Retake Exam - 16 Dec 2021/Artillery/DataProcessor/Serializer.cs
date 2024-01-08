@@ -39,7 +39,7 @@
 
         public static string ExportGuns(ArtilleryContext context, string manufacturer)
         {
-            ExportGunDto[] exportGuns = context.Guns
+            var exportGuns = context.Guns
                 .Where(g => g.Manufacturer.ManufacturerName == manufacturer)
                 .OrderBy(g => g.BarrelLength)
                 .ToArray()
@@ -67,17 +67,17 @@
 
         private static string Serialize<T>(T obj, string rootName)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            XmlRootAttribute xmlRoot =
+            var xmlRoot =
                 new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+            var namespaces = new XmlSerializerNamespaces();
             namespaces.Add(string.Empty, string.Empty);
 
-            using StringWriter writer = new StringWriter(sb);
+            using var writer = new StringWriter(sb);
             xmlSerializer.Serialize(writer, obj, namespaces);
 
             return sb.ToString().TrimEnd();
