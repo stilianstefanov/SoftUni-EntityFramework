@@ -26,7 +26,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportCountryDto[] countryDtos = Deserialize<ImportCountryDto[]>(xmlString, "Countries");
+            var countryDtos = Deserialize<ImportCountryDto[]>(xmlString, "Countries");
 
             ICollection<Country> validCountries = new List<Country>();
             foreach (var dto in countryDtos)
@@ -56,7 +56,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportManufacturerDto[] manDtos = Deserialize<ImportManufacturerDto[]>(xmlString, "Manufacturers");
+            var manDtos = Deserialize<ImportManufacturerDto[]>(xmlString, "Manufacturers");
 
             ICollection<Manufacturer> validManufacturers = new List<Manufacturer>();
             foreach (var dto in manDtos)
@@ -67,15 +67,15 @@
                     continue;
                 }
 
-                Manufacturer manufacturer = new Manufacturer()
+                var manufacturer = new Manufacturer()
                 {
                     ManufacturerName = dto.ManufacturerName!,
                     Founded = dto.Founded,
                 };
 
-                string[] tokens = manufacturer.Founded.Split(", ", StringSplitOptions.RemoveEmptyEntries);
-                string countryName = tokens[tokens.Length - 1];
-                string townName = tokens[tokens.Length - 2];
+                var tokens = manufacturer.Founded.Split(", ", StringSplitOptions.RemoveEmptyEntries);
+                var countryName = tokens[tokens.Length - 1];
+                var townName = tokens[tokens.Length - 2];
 
                 validManufacturers.Add(manufacturer);
                 sb.AppendLine(string.Format(SuccessfulImportManufacturer, manufacturer.ManufacturerName, $"{townName}, {countryName}"));
@@ -91,7 +91,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportShellDto[] shellDtos = Deserialize<ImportShellDto[]>(xmlString, "Shells");
+            var shellDtos = Deserialize<ImportShellDto[]>(xmlString, "Shells");
 
             ICollection<Shell> validShells = new List<Shell>();
             foreach (var dto in shellDtos)
@@ -121,7 +121,7 @@
         {
             var sb = new StringBuilder();
 
-            ImportGunDto[] gunDtos = JsonConvert.DeserializeObject<ImportGunDto[]>(jsonString)!;
+            var gunDtos = JsonConvert.DeserializeObject<ImportGunDto[]>(jsonString)!;
 
             ICollection<Gun> validGuns = new List<Gun>();
             foreach (var gunDto in gunDtos)
@@ -132,14 +132,14 @@
                     continue;
                 }
 
-                bool isGunTypeValid = Enum.TryParse<GunType>(gunDto.GunType, out GunType gunType);
+                var isGunTypeValid = Enum.TryParse<GunType>(gunDto.GunType, out var gunType);
                 if (!isGunTypeValid)
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
 
-                Gun gun = new Gun()
+                var gun = new Gun()
                 {
                     ManufacturerId = gunDto.ManufacturerId,
                     GunWeight = gunDto.GunWeight,
@@ -179,12 +179,12 @@
 
         private static T Deserialize<T>(string inputXml, string rootName)
         {
-            XmlRootAttribute xmlRoot = new XmlRootAttribute(rootName);
-            XmlSerializer xmlSerializer =
+            var xmlRoot = new XmlRootAttribute(rootName);
+            var xmlSerializer =
                 new XmlSerializer(typeof(T), xmlRoot);
 
-            using StringReader reader = new StringReader(inputXml);
-            T deserializedDtos =
+            using var reader = new StringReader(inputXml);
+            var deserializedDtos =
                 (T)xmlSerializer.Deserialize(reader);
 
             return deserializedDtos;
